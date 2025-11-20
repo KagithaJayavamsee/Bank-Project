@@ -1,0 +1,623 @@
+// Source code is decompiled from a .class file using FernFlower decompiler.
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.PrintJob;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.FileInputStream;
+import java.io.LineNumberReader;
+import java.io.StringReader;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Properties;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.DefaultMetalTheme;
+import javax.swing.plaf.metal.MetalTheme;
+
+public class BankSystem extends JFrame implements ActionListener, ItemListener {
+   private JDesktopPane desktop = new JDesktopPane();
+   private JMenuBar bar;
+   private JMenu mnuFile;
+   private JMenu mnuEdit;
+   private JMenu mnuView;
+   private JMenu mnuOpt;
+   private JMenu mnuWin;
+   private JMenu mnuHelp;
+   private JMenuItem addNew;
+   private JMenuItem printRec;
+   private JMenuItem end;
+   private JMenuItem deposit;
+   private JMenuItem withdraw;
+   private JMenuItem delRec;
+   private JMenuItem search;
+   private JMenuItem searchName;
+   private JMenuItem oneByOne;
+   private JMenuItem allCustomer;
+   private JMenuItem change;
+   private JMenuItem style;
+   private JMenuItem theme;
+   private JMenuItem close;
+   private JMenuItem closeAll;
+   private JMenuItem content;
+   private JMenuItem keyHelp;
+   private JMenuItem about;
+   private JPopupMenu popMenu = new JPopupMenu();
+   private JMenuItem open;
+   private JMenuItem report;
+   private JMenuItem dep;
+   private JMenuItem with;
+   private JMenuItem del;
+   private JMenuItem find;
+   private JMenuItem all;
+   private JToolBar toolBar;
+   private JButton btnNew;
+   private JButton btnDep;
+   private JButton btnWith;
+   private JButton btnRec;
+   private JButton btnDel;
+   private JButton btnSrch;
+   private JButton btnHelp;
+   private JButton btnKey;
+   private JPanel statusBar = new JPanel();
+   private JLabel welcome;
+   private JLabel author;
+   private String[] strings = new String[]{"1. Metal", "2. Motif", "3. Windows"};
+   private UIManager.LookAndFeelInfo[] looks = UIManager.getInstalledLookAndFeels();
+   private ButtonGroup group = new ButtonGroup();
+   private JRadioButtonMenuItem[] radio;
+   private Date currDate;
+   private SimpleDateFormat sdf;
+   private String d;
+   private int count;
+   private int rows;
+   private int total;
+   private String[][] records;
+   private FileInputStream fis;
+   private DataInputStream dis;
+
+   public BankSystem() {
+      super("BankSystem [Pvt] Limited.");
+      this.radio = new JRadioButtonMenuItem[this.strings.length];
+      this.currDate = new Date();
+      this.sdf = new SimpleDateFormat("dd MMMM yyyy", Locale.getDefault());
+      this.d = this.sdf.format(this.currDate);
+      this.count = 0;
+      this.rows = 0;
+      this.total = 0;
+      this.records = new String[500][6];
+      UIManager.addPropertyChangeListener(new UISwitchListener(this.getRootPane()));
+      this.bar = new JMenuBar();
+      this.setIconImage(this.getToolkit().getImage("Images/Bank.gif"));
+      this.setSize(700, 550);
+      this.setJMenuBar(this.bar);
+      this.addWindowListener(new BankSystem$1(this));
+      this.setLocation((Toolkit.getDefaultToolkit().getScreenSize().width - this.getWidth()) / 2, (Toolkit.getDefaultToolkit().getScreenSize().height - this.getHeight()) / 2);
+      this.mnuFile = new JMenu("File");
+      this.mnuFile.setMnemonic(70);
+      this.mnuEdit = new JMenu("Edit");
+      this.mnuEdit.setMnemonic(69);
+      this.mnuView = new JMenu("View");
+      this.mnuView.setMnemonic(86);
+      this.mnuOpt = new JMenu("Options");
+      this.mnuOpt.setMnemonic(79);
+      this.mnuWin = new JMenu("Window");
+      this.mnuWin.setMnemonic(87);
+      this.mnuHelp = new JMenu("Help");
+      this.mnuHelp.setMnemonic(72);
+      this.addNew = new JMenuItem("Open New Account", new ImageIcon("Images/Open.gif"));
+      this.addNew.setAccelerator(KeyStroke.getKeyStroke(78, 2));
+      this.addNew.setMnemonic(78);
+      this.addNew.addActionListener(this);
+      this.printRec = new JMenuItem("Print Customer Balance", new ImageIcon("Images/New.gif"));
+      this.printRec.setAccelerator(KeyStroke.getKeyStroke(82, 2));
+      this.printRec.setMnemonic(82);
+      this.printRec.addActionListener(this);
+      this.end = new JMenuItem("Quit BankSystem ?", new ImageIcon("Images/export.gif"));
+      this.end.setAccelerator(KeyStroke.getKeyStroke(81, 2));
+      this.end.setMnemonic(81);
+      this.end.addActionListener(this);
+      this.deposit = new JMenuItem("Deposit Money");
+      this.deposit.setAccelerator(KeyStroke.getKeyStroke(84, 2));
+      this.deposit.setMnemonic(84);
+      this.deposit.addActionListener(this);
+      this.withdraw = new JMenuItem("Withdraw Money");
+      this.withdraw.setAccelerator(KeyStroke.getKeyStroke(87, 2));
+      this.withdraw.setMnemonic(87);
+      this.withdraw.addActionListener(this);
+      this.delRec = new JMenuItem("Delete Customer", new ImageIcon("Images/Delete.gif"));
+      this.delRec.setAccelerator(KeyStroke.getKeyStroke(68, 2));
+      this.delRec.setMnemonic(68);
+      this.delRec.addActionListener(this);
+      this.search = new JMenuItem("Search By No.", new ImageIcon("Images/find.gif"));
+      this.search.setAccelerator(KeyStroke.getKeyStroke(83, 2));
+      this.search.setMnemonic(83);
+      this.search.addActionListener(this);
+      this.searchName = new JMenuItem("Search By Name");
+      this.searchName.setAccelerator(KeyStroke.getKeyStroke(77, 2));
+      this.searchName.setMnemonic(77);
+      this.searchName.addActionListener(this);
+      this.oneByOne = new JMenuItem("View One By One");
+      this.oneByOne.setAccelerator(KeyStroke.getKeyStroke(79, 2));
+      this.oneByOne.setMnemonic(79);
+      this.oneByOne.addActionListener(this);
+      this.allCustomer = new JMenuItem("View All Customer", new ImageIcon("Images/refresh.gif"));
+      this.allCustomer.setAccelerator(KeyStroke.getKeyStroke(65, 2));
+      this.allCustomer.setMnemonic(65);
+      this.allCustomer.addActionListener(this);
+      this.change = new JMenuItem("Change Background Color");
+      this.change.setAccelerator(KeyStroke.getKeyStroke(66, 2));
+      this.change.setMnemonic(66);
+      this.change.addActionListener(this);
+      this.style = new JMenu("Change Layout Style");
+      this.style.setMnemonic(76);
+
+      for(int var1 = 0; var1 < this.radio.length; ++var1) {
+         this.radio[var1] = new JRadioButtonMenuItem(this.strings[var1]);
+         this.radio[var1].addItemListener(this);
+         this.group.add(this.radio[var1]);
+         this.style.add(this.radio[var1]);
+      }
+
+      MetalTheme[] var2 = new MetalTheme[]{new DefaultMetalTheme(), new GreenTheme(), new AquaTheme(), new SandTheme(), new SolidTheme(), new MilkyTheme(), new GrayTheme()};
+      this.theme = new MetalThemeMenu("Apply Theme", var2);
+      this.theme.setMnemonic(77);
+      this.close = new JMenuItem("Close Active Window");
+      this.close.setMnemonic(67);
+      this.close.addActionListener(this);
+      this.closeAll = new JMenuItem("Close All Windows...");
+      this.closeAll.setMnemonic(65);
+      this.closeAll.addActionListener(this);
+      this.content = new JMenuItem("Help Contents", new ImageIcon("Images/paste.gif"));
+      this.content.setAccelerator(KeyStroke.getKeyStroke(72, 2));
+      this.content.setMnemonic(72);
+      this.content.addActionListener(this);
+      this.keyHelp = new JMenuItem("Help on Shortcuts...");
+      this.keyHelp.setAccelerator(KeyStroke.getKeyStroke(75, 2));
+      this.keyHelp.setMnemonic(75);
+      this.keyHelp.addActionListener(this);
+      this.about = new JMenuItem("About BankSystem", new ImageIcon("Images/Save.gif"));
+      this.about.setAccelerator(KeyStroke.getKeyStroke(67, 2));
+      this.about.setMnemonic(67);
+      this.about.addActionListener(this);
+      this.mnuFile.add(this.addNew);
+      this.mnuFile.addSeparator();
+      this.mnuFile.add(this.printRec);
+      this.mnuFile.addSeparator();
+      this.mnuFile.add(this.end);
+      this.mnuEdit.add(this.deposit);
+      this.mnuEdit.add(this.withdraw);
+      this.mnuEdit.addSeparator();
+      this.mnuEdit.add(this.delRec);
+      this.mnuEdit.addSeparator();
+      this.mnuEdit.add(this.search);
+      this.mnuEdit.add(this.searchName);
+      this.mnuView.add(this.oneByOne);
+      this.mnuView.addSeparator();
+      this.mnuView.add(this.allCustomer);
+      this.mnuOpt.add(this.change);
+      this.mnuOpt.addSeparator();
+      this.mnuOpt.add(this.style);
+      this.mnuOpt.addSeparator();
+      this.mnuOpt.add(this.theme);
+      this.mnuWin.add(this.close);
+      this.mnuWin.add(this.closeAll);
+      this.mnuHelp.add(this.content);
+      this.mnuHelp.addSeparator();
+      this.mnuHelp.add(this.keyHelp);
+      this.mnuHelp.addSeparator();
+      this.mnuHelp.add(this.about);
+      this.bar.add(this.mnuFile);
+      this.bar.add(this.mnuEdit);
+      this.bar.add(this.mnuView);
+      this.bar.add(this.mnuOpt);
+      this.bar.add(this.mnuWin);
+      this.bar.add(this.mnuHelp);
+      this.open = new JMenuItem("Open New Account", new ImageIcon("Images/Open.gif"));
+      this.open.addActionListener(this);
+      this.report = new JMenuItem("Print BankSystem Report", new ImageIcon("Images/New.gif"));
+      this.report.addActionListener(this);
+      this.dep = new JMenuItem("Deposit Money");
+      this.dep.addActionListener(this);
+      this.with = new JMenuItem("Withdraw Money");
+      this.with.addActionListener(this);
+      this.del = new JMenuItem("Delete Customer", new ImageIcon("Images/Delete.gif"));
+      this.del.addActionListener(this);
+      this.find = new JMenuItem("Search Customer", new ImageIcon("Images/find.gif"));
+      this.find.addActionListener(this);
+      this.all = new JMenuItem("View All Customer", new ImageIcon("Images/refresh.gif"));
+      this.all.addActionListener(this);
+      this.popMenu.add(this.open);
+      this.popMenu.add(this.report);
+      this.popMenu.add(this.dep);
+      this.popMenu.add(this.with);
+      this.popMenu.add(this.del);
+      this.popMenu.add(this.find);
+      this.popMenu.add(this.all);
+      this.addMouseListener(new BankSystem$2(this));
+      this.btnNew = new JButton(new ImageIcon("Images/NotePad.gif"));
+      this.btnNew.setToolTipText("Create New Account");
+      this.btnNew.addActionListener(this);
+      this.btnDep = new JButton(new ImageIcon("Images/ImationDisk.gif"));
+      this.btnDep.setToolTipText("Deposit Money");
+      this.btnDep.addActionListener(this);
+      this.btnWith = new JButton(new ImageIcon("Images/SuperDisk.gif"));
+      this.btnWith.setToolTipText("Withdraw Money");
+      this.btnWith.addActionListener(this);
+      this.btnRec = new JButton(new ImageIcon("Images/Paproll.gif"));
+      this.btnRec.setToolTipText("Print Customer Balance");
+      this.btnRec.addActionListener(this);
+      this.btnDel = new JButton(new ImageIcon("Images/Toaster.gif"));
+      this.btnDel.setToolTipText("Delete Customer");
+      this.btnDel.addActionListener(this);
+      this.btnSrch = new JButton(new ImageIcon("Images/Search.gif"));
+      this.btnSrch.setToolTipText("Search Customer");
+      this.btnSrch.addActionListener(this);
+      this.btnHelp = new JButton(new ImageIcon("Images/Help.gif"));
+      this.btnHelp.setToolTipText("Help on Bank System");
+      this.btnHelp.addActionListener(this);
+      this.btnKey = new JButton(new ImageIcon("Images/Keys.gif"));
+      this.btnKey.setToolTipText("Shortcut Keys of BankSystem");
+      this.btnKey.addActionListener(this);
+      this.toolBar = new JToolBar();
+      this.toolBar.add(this.btnNew);
+      this.toolBar.addSeparator();
+      this.toolBar.add(this.btnDep);
+      this.toolBar.add(this.btnWith);
+      this.toolBar.addSeparator();
+      this.toolBar.add(this.btnRec);
+      this.toolBar.addSeparator();
+      this.toolBar.add(this.btnDel);
+      this.toolBar.addSeparator();
+      this.toolBar.add(this.btnSrch);
+      this.toolBar.addSeparator();
+      this.toolBar.add(this.btnHelp);
+      this.toolBar.add(this.btnKey);
+      this.author = new JLabel(" BankSystem [Pvt] Limited.", 0);
+      this.author.setForeground(Color.black);
+      this.author.setToolTipText("Program's Title");
+      this.welcome = new JLabel("Welcome Today is " + this.d + " ", 4);
+      this.welcome.setForeground(Color.black);
+      this.welcome.setToolTipText("Welcoming the User & System Current Date");
+      this.statusBar.setLayout(new BorderLayout());
+      this.statusBar.add(this.author, "West");
+      this.statusBar.add(this.welcome, "East");
+      this.desktop.putClientProperty("JDesktopPane.dragMode", "outline");
+      this.getContentPane().add(this.toolBar, "North");
+      this.getContentPane().add(this.desktop, "Center");
+      this.getContentPane().add(this.statusBar, "South");
+      this.setVisible(true);
+   }
+
+   public void actionPerformed(ActionEvent var1) {
+      Object var2 = var1.getSource();
+      boolean var3;
+      if (var2 != this.addNew && var2 != this.open && var2 != this.btnNew) {
+         if (var2 != this.printRec && var2 != this.btnRec && var2 != this.report) {
+            if (var2 == this.end) {
+               this.quitApp();
+            } else if (var2 != this.deposit && var2 != this.dep && var2 != this.btnDep) {
+               if (var2 != this.withdraw && var2 != this.with && var2 != this.btnWith) {
+                  if (var2 != this.delRec && var2 != this.del && var2 != this.btnDel) {
+                     if (var2 != this.search && var2 != this.find && var2 != this.btnSrch) {
+                        if (var2 == this.searchName) {
+                           var3 = this.openChildWindow("Search Customer [By Name]");
+                           if (!var3) {
+                              FindName var10 = new FindName();
+                              this.desktop.add(var10);
+                              var10.show();
+                           }
+                        } else if (var2 == this.oneByOne) {
+                           var3 = this.openChildWindow("View Account Holders");
+                           if (!var3) {
+                              ViewOne var12 = new ViewOne();
+                              this.desktop.add(var12);
+                              var12.show();
+                           }
+                        } else if (var2 != this.allCustomer && var2 != this.all) {
+                           if (var2 == this.change) {
+                              Color var11 = new Color(153, 153, 204);
+                              var11 = JColorChooser.showDialog(this, "Choose Background Color", var11);
+                              if (var11 != null) {
+                                 this.desktop.setBackground(var11);
+                                 this.desktop.repaint();
+                              }
+                           } else if (var2 != this.close) {
+                              if (var2 == this.closeAll) {
+                                 JInternalFrame[] var14 = this.desktop.getAllFrames();
+
+                                 for(int var15 = 0; var15 < var14.length; ++var15) {
+                                    try {
+                                       var14[var15].setClosed(true);
+                                    } catch (Exception var5) {
+                                    }
+                                 }
+                              } else {
+                                 BankHelp var16;
+                                 if (var2 != this.content && var2 != this.btnHelp) {
+                                    if (var2 != this.keyHelp && var2 != this.btnKey) {
+                                       if (var2 == this.about) {
+                                          String var17 = "BankSystem [Pvt] Limited.\n\nCreated & Designed By:\nMuhammad Wasif Javed\n\nE-mail me:\n waskagithajayavamsee@gmail.com";
+                                          JOptionPane.showMessageDialog(this, var17, "About BankSystem", -1);
+                                       }
+                                    } else {
+                                       var3 = this.openChildWindow("BankSystem Keys");
+                                       if (!var3) {
+                                          var16 = new BankHelp("BankSystem Keys", "Help/Keys.htm");
+                                          this.desktop.add(var16);
+                                          var16.show();
+                                       }
+                                    }
+                                 } else {
+                                    var3 = this.openChildWindow("BankSystem Help");
+                                    if (!var3) {
+                                       var16 = new BankHelp("BankSystem Help", "Help/Bank.htm");
+                                       this.desktop.add(var16);
+                                       var16.show();
+                                    }
+                                 }
+                              }
+                           }
+                        } else {
+                           var3 = this.openChildWindow("View All Account Holders");
+                           if (!var3) {
+                              ViewCustomer var13 = new ViewCustomer();
+                              this.desktop.add(var13);
+                              var13.show();
+                           }
+                        }
+                     } else {
+                        var3 = this.openChildWindow("Search Customer [By No.]");
+                        if (!var3) {
+                           FindAccount var9 = new FindAccount();
+                           this.desktop.add(var9);
+                           var9.show();
+                        }
+                     }
+                  } else {
+                     var3 = this.openChildWindow("Delete Account Holder");
+                     if (!var3) {
+                        DeleteCustomer var8 = new DeleteCustomer();
+                        this.desktop.add(var8);
+                        var8.show();
+                     }
+                  }
+               } else {
+                  var3 = this.openChildWindow("Withdraw Money");
+                  if (!var3) {
+                     WithdrawMoney var7 = new WithdrawMoney();
+                     this.desktop.add(var7);
+                     var7.show();
+                  }
+               }
+            } else {
+               var3 = this.openChildWindow("Deposit Money");
+               if (!var3) {
+                  DepositMoney var6 = new DepositMoney();
+                  this.desktop.add(var6);
+                  var6.show();
+               }
+            }
+         } else {
+            this.getAccountNo();
+         }
+      } else {
+         var3 = this.openChildWindow("Create New Account");
+         if (!var3) {
+            NewAccount var4 = new NewAccount();
+            this.desktop.add(var4);
+            var4.show();
+         }
+      }
+
+   }
+
+   public void changeLookAndFeel(int var1) {
+      try {
+         UIManager.setLookAndFeel(this.looks[var1].getClassName());
+         SwingUtilities.updateComponentTreeUI(this);
+      } catch (Exception var2) {
+      }
+
+   }
+
+   void findRec(String var1) {
+      boolean var2 = false;
+
+      for(int var3 = 0; var3 < this.total; ++var3) {
+         if (this.records[var3][0].equals(var1)) {
+            var2 = true;
+            this.printRecord(this.makeRecordPrint(var3));
+            break;
+         }
+      }
+
+      if (!var2) {
+         JOptionPane.showMessageDialog(this, "Account No. " + var1 + " doesn't Exist.", "BankSystem - WrongNo", -1);
+         this.getAccountNo();
+      }
+
+   }
+
+   void getAccountNo() {
+      this.rows = 0;
+      boolean var2 = this.populateArray();
+      if (var2) {
+         try {
+            String var1 = JOptionPane.showInputDialog(this, "Enter Account No. to Print Customer Balance.\n(Tip: Account No. Contains only Digits)", "BankSystem - PrintRecord", -1);
+            if (var1.equals("")) {
+               JOptionPane.showMessageDialog(this, "Provide Account No. to Print.", "BankSystem - EmptyField", -1);
+               this.getAccountNo();
+            } else {
+               this.findRec(var1);
+            }
+         } catch (Exception var3) {
+         }
+      }
+
+   }
+
+   public void itemStateChanged(ItemEvent var1) {
+      for(int var2 = 0; var2 < this.radio.length; ++var2) {
+         if (this.radio[var2].isSelected()) {
+            this.changeLookAndFeel(var2);
+         }
+      }
+
+   }
+
+   String makeRecordPrint(int var1) {
+      String var3 = "               BankSystem [Pvt] Limited.               \n";
+      String var4 = "               Customer Balance Report.              \n\n";
+      String var5 = "  Account No.:       " + this.records[var1][0] + "\n";
+      String var6 = "  Customer Name:     " + this.records[var1][1] + "\n";
+      String var7 = "  Last Transaction:  " + this.records[var1][2] + ", " + this.records[var1][3] + ", " + this.records[var1][4] + "\n";
+      String var8 = "  Current Balance:   " + this.records[var1][5] + "\n\n";
+      String var9 = "          Copyright © 2003 KAGITHA JAYAVAMSEE .\n";
+      String var10 = " -----------------------------------------------------------\n";
+      String var11 = " -----------------------------------------------------------\n";
+      String var12 = " -----------------------------------------------------------\n";
+      String var13 = " -----------------------------------------------------------\n";
+      String var14 = " -----------------------------------------------------------\n\n";
+      String var2 = var3 + var10 + var4 + var5 + var11 + var6 + var12 + var7 + var13 + var8 + var14 + var9;
+      return var2;
+   }
+
+   private boolean openChildWindow(String var1) {
+      JInternalFrame[] var2 = this.desktop.getAllFrames();
+
+      for(int var3 = 0; var3 < var2.length; ++var3) {
+         if (var2[var3].getTitle().equalsIgnoreCase(var1)) {
+            var2[var3].show();
+            return true;
+         }
+      }
+
+      return false;
+   }
+
+   boolean populateArray() {
+      boolean var1 = false;
+
+      try {
+         this.fis = new FileInputStream("Bank.dat");
+         this.dis = new DataInputStream(this.fis);
+
+         while(true) {
+            for(int var2 = 0; var2 < 6; ++var2) {
+               this.records[this.rows][var2] = this.dis.readUTF();
+            }
+
+            ++this.rows;
+         }
+      } catch (Exception var4) {
+         this.total = this.rows;
+         if (this.total == 0) {
+            JOptionPane.showMessageDialog((Component)null, "Records File is Empty.\nEnter Records First to Display.", "BankSystem - EmptyFile", -1);
+            var1 = false;
+         } else {
+            var1 = true;
+
+            try {
+               this.dis.close();
+               this.fis.close();
+            } catch (Exception var3) {
+            }
+         }
+
+         return var1;
+      }
+   }
+
+   void printRecord(String var1) {
+      StringReader var2 = new StringReader(var1);
+      LineNumberReader var3 = new LineNumberReader(var2);
+      Font var4 = new Font("Times New Roman", 0, 12);
+      Properties var5 = new Properties();
+      PrintJob var6 = this.getToolkit().getPrintJob(this, "Print Customer Balance Report", var5);
+      if (var6 != null) {
+         Graphics var7 = var6.getGraphics();
+         if (var7 != null) {
+            FontMetrics var8 = var7.getFontMetrics(var4);
+            byte var9 = 20;
+            int var10 = var6.getPageDimension().height - var9;
+            int var11 = var8.getHeight();
+            int var12 = var8.getDescent();
+            int var13 = var9;
+            var7.setFont(var4);
+
+            String var14;
+            try {
+               do {
+                  var14 = var3.readLine();
+                  if (var14 != null) {
+                     if (var13 + var11 > var10) {
+                        var7.dispose();
+                        var7 = var6.getGraphics();
+                        var13 = var9;
+                     }
+
+                     var13 += var11;
+                     if (var7 != null) {
+                        var7.setFont(var4);
+                        var7.drawString(var14, var9, var13 - var12);
+                     }
+                  }
+               } while(var14 != null);
+            } catch (EOFException var15) {
+            } catch (Throwable var16) {
+            }
+         }
+
+         var7.dispose();
+      }
+
+      if (var6 != null) {
+         var6.end();
+      }
+
+   }
+
+   private void quitApp() {
+      try {
+         int var1 = JOptionPane.showConfirmDialog(this, "Are you really want to exit\nFrom BankSystem?", "BankSystem - Exit", 0, -1);
+         if (var1 == 0) {
+            this.setVisible(false);
+            this.dispose();
+            System.out.println("Thanks for Using BankSystem\nAuthor - KAGITHA JAYAVAMSEE");
+            System.exit(0);
+         } else if (var1 == 1) {
+            this.setDefaultCloseOperation(0);
+         }
+      } catch (Exception var2) {
+      }
+
+   }
+}
